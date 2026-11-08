@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="paper" x2="1" y2="1"><stop stop-color="#f8e6c3"/><stop offset="1" stop-color="#d5ad7a"/></linearGradient>
+    <linearGradient id="cup" x2="1"><stop stop-color="#8b542b"/><stop offset=".35" stop-color="#cf9b63"/><stop offset=".75" stop-color="#bf8650"/><stop offset="1" stop-color="#6c4027"/></linearGradient>
+    <linearGradient id="lid" x2="0" y2="1"><stop stop-color="#423a31"/><stop offset=".5" stop-color="#1e1a17"/><stop offset="1" stop-color="#4e4033"/></linearGradient>
+    <radialGradient id="light"><stop stop-color="#fff7d8" stop-opacity=".7"/><stop offset="1" stop-color="#fff7d8" stop-opacity="0"/></radialGradient>
+    <pattern id="texture" width="13" height="13" patternUnits="userSpaceOnUse"><circle cx="3" cy="5" r=".65" fill="#56311b" opacity=".12"/><circle cx="10" cy="11" r=".8" fill="#fff6dc" opacity=".3"/></pattern>
+    <filter id="shadow"><feGaussianBlur stdDeviation="10"/></filter>
+    <g id="bean"><ellipse rx="13" ry="8" fill="#70401f"/><path d="M-10 0q5-5 10 0t10 0" fill="none" stroke="#c78b4c" stroke-width="2"/></g>
+    <g id="leaf"><path d="M0 0C-47-13-25-60 0-69C27-41 19-14 0 0z" fill="#526037"/><path d="M0 0q-10-37 0-62" fill="none" stroke="#b9b57b" stroke-width="2"/></g>
+  </defs>
+  <rect width="640" height="360" fill="url(#paper)"/>
+  <ellipse cx="207" cy="148" rx="330" ry="220" fill="url(#light)"/>
+  <rect width="640" height="360" fill="url(#texture)"/>
+  <g opacity=".9"><use href="#leaf" transform="translate(35 122) rotate(50)"/><use href="#leaf" transform="translate(3 210) rotate(95) scale(1.3)"/><use href="#leaf" transform="translate(624 79) rotate(-24) scale(1.3)"/><use href="#leaf" transform="translate(631 151) rotate(-63) scale(1.6)"/><use href="#leaf" transform="translate(625 240) rotate(-100) scale(1.4)"/></g>
+  <g fill="#4d2a18" font-family="Arial, sans-serif" font-weight="900">
+    <text x="66" y="124" font-size="62" letter-spacing="-2">КОФЕ</text>
+    <text x="66" y="188" font-size="62" letter-spacing="-2">С СОБОЙ</text>
+    <text x="69" y="220" font-size="13" letter-spacing="1.4">НАСТРОЕНИЕ С НАМИ</text>
+  </g>
+  <ellipse cx="461" cy="308" rx="101" ry="15" fill="#422514" opacity=".35" filter="url(#shadow)"/>
+  <g transform="rotate(8 460 186)">
+    <path d="M387 84h145l-16 207q-51 20-112 0z" fill="url(#cup)" stroke="#a46d3b" stroke-width="2"/>
+    <path d="M393 145h134l-8 89q-57 15-119 0z" fill="#ead0a5"/>
+    <g transform="translate(458 194)" fill="none" stroke="#5c6335" stroke-width="4" stroke-linecap="round"><path d="M0 26V-25M0 0c-22 2-25-21-25-21S-2-24 0 0M0 11c22 2 25-21 25-21S2-13 0 11"/></g>
+    <ellipse cx="460" cy="85" rx="77" ry="14" fill="#241e18"/>
+    <path d="M386 76h148l8 19q-80 24-162 0z" fill="url(#lid)" stroke="#675748" stroke-width="2"/>
+    <ellipse cx="460" cy="76" rx="74" ry="13" fill="#332c24" stroke="#796654" stroke-width="2"/>
+    <ellipse cx="461" cy="71" rx="61" ry="9" fill="#211c17" stroke="#55493b"/>
+    <path d="M418 64q28-7 53-3" fill="none" stroke="#c3ae8c" stroke-width="2" opacity=".6"/>
+  </g>
+  <g><use href="#bean" transform="translate(92 290) rotate(35)"/><use href="#bean" transform="translate(118 302) rotate(-25)"/><use href="#bean" transform="translate(144 286) rotate(12)"/><use href="#bean" transform="translate(370 318) rotate(-37)"/><use href="#bean" transform="translate(397 330) rotate(29)"/><use href="#bean" transform="translate(539 306) rotate(-16)"/><use href="#bean" transform="translate(577 287) rotate(51)"/><use href="#bean" transform="translate(322 48) rotate(-28) scale(.8)"/></g>
+  <path d="M48 251h278" stroke="#9e764b" opacity=".45"/>
+  <text x="68" y="272" fill="#755536" font-family="Arial, sans-serif" font-size="12" letter-spacing="2">ВАША МАЛЕНЬКАЯ ПАУЗА</text>
+</svg>

@@ -1,0 +1,44 @@
+.magazine-section[hidden]{display:none}.media-switch{flex-wrap:wrap}
+.magazine-shelf{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px;align-items:start}
+.magazine-card{border:0;background:none;color:var(--text);padding:0;cursor:pointer;text-align:center;font:inherit;min-width:0}
+.magazine-card>b{display:block;margin:22px 0 16px;font-size:clamp(16px,1.7vw,23px);line-height:1.3;min-height:2.6em}
+.magazine-cover{display:block;position:relative;aspect-ratio: .71;isolation:isolate;filter:drop-shadow(0 14px 18px #0009);transition:transform .35s,filter .35s}
+.magazine-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;border-radius:4px}
+.magazine-peek{transform:translate(3px,3px);filter:brightness(.8)}
+.magazine-front{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);transition:clip-path .4s}
+.magazine-fold{position:absolute;right:0;top:0;width:0;height:0;background:linear-gradient(225deg,#faebce 0%,#cdb78e 45%,#7a644b 50%,#ead5b0 100%);clip-path:polygon(0 0,0 100%,100% 100%);filter:drop-shadow(-3px 4px 3px #0008);transition:width .4s,height .4s}
+.magazine-card:hover .magazine-cover,.magazine-card:focus-visible .magazine-cover{transform:translateY(-7px) rotate(-1deg);filter:drop-shadow(0 18px 24px #aa49cc55)}
+.magazine-card:hover .magazine-front,.magazine-card:focus-visible .magazine-front{clip-path:polygon(0 0,calc(100% - 52px) 0,100% 52px,100% 100%,0 100%)}
+.magazine-card:hover .magazine-fold,.magazine-card:focus-visible .magazine-fold{width:52px;height:52px}
+.magazine-action{display:inline-block;border:1px solid #ce9bde;border-radius:30px;padding:10px 22px;color:#f4e4fc}.magazine-card:focus-visible{outline:2px solid #ddb0f3;outline-offset:9px;border-radius:5px}
+.magazine-hint{text-align:center;color:#bd8ed0;font-style:italic;margin:36px 0 0}
+.magazine-reader{width:min(1280px,96vw);max-width:96vw;height:94dvh;max-height:94dvh;padding:16px 22px;border:1px solid #795388;border-radius:14px;background:radial-gradient(ellipse at center,#36233b,#100b17 75%);color:#f6eafa;overflow:hidden}
+.magazine-reader[open]{display:flex;flex-direction:column;gap:12px}.magazine-reader::backdrop{background:#050209e8;backdrop-filter:blur(8px)}
+.magazine-toolbar{display:flex;align-items:center;gap:12px}.magazine-toolbar h2{font:500 clamp(14px,2vw,21px)/1.3 var(--body);margin:0 auto 0 0}
+.magazine-reader button{font:inherit;color:inherit;background:#ffffff09;border:1px solid #9769a6;border-radius:24px;padding:9px 16px;cursor:pointer;min-height:44px}.magazine-reader button:disabled{opacity:.3;cursor:default}.magazine-reader button:focus-visible,.magazine-page:focus-visible{outline:2px solid #e4b5ff;outline-offset:3px}
+.magazine-viewport{flex:1;min-height:0;overflow:auto;display:flex;align-items:center;justify-content:center;padding:10px;touch-action:pan-y pinch-zoom}
+.magazine-book{position:relative;display:flex;height:100%;max-height:100%;aspect-ratio:1.424;max-width:100%;perspective:1800px;filter:drop-shadow(0 12px 18px #0009);flex-shrink:0}
+.magazine-page{width:50%;height:100%;position:relative;background:#d9c7a5;cursor:zoom-in}.magazine-page img,.magazine-turn img{display:block;width:100%;height:100%;object-fit:contain;user-select:none}
+.magazine-page:first-child::after,.magazine-page:nth-child(2)::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 90%,#0005)}
+.magazine-page:nth-child(2)::after{background:linear-gradient(90deg,#0005,transparent 10%)}.magazine-page.blank{background:linear-gradient(90deg,#b4a183,#e0cfac)}
+.magazine-turn{position:absolute;top:0;bottom:0;width:50%;z-index:3;background:#ddc9a6;backface-visibility:hidden;box-shadow:0 0 18px #0007}.turn-next{right:0;transform-origin:left center}.turn-prev{left:0;transform-origin:right center}
+.magazine-navigation{display:flex;align-items:center;justify-content:center;gap:20px}.magazine-navigation output{text-align:center;min-width:130px;font-size:14px}.magazine-reader-hint{margin:0;text-align:center;font-size:12px;color:#c6a7cf}
+.magazine-book.single-page{aspect-ratio:.712}.single-page .magazine-page,.single-page .magazine-turn{width:100%}.single-page .magazine-page::after{display:none}
+.cover-only .magazine-page{cursor:pointer}
+.magazine-page>img{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);transition:clip-path .28s}
+.magazine-reader .magazine-edge{position:absolute;top:0;bottom:0;width:18%;min-height:0;padding:0;border:0;border-radius:0;background:transparent;z-index:2;cursor:pointer}
+.edge-next{right:0}.edge-prev{left:0}
+.reader-fold{position:absolute;top:0;width:0;height:0;pointer-events:none;background:linear-gradient(225deg,#fff5dc 0%,#ead5ad 32%,#907451 47%,#fff1d1 51%,#d1b28a 74%,#8c7054 100%);transition:width .28s,height .28s;filter:drop-shadow(-5px 7px 6px #000a)}
+.edge-next .reader-fold{right:0;clip-path:polygon(0 0,0 100%,100% 100%)}
+.edge-prev .reader-fold{left:0;clip-path:polygon(100% 0,0 100%,100% 100%);background:linear-gradient(135deg,#fff5dc 0%,#ead5ad 32%,#907451 47%,#fff1d1 51%,#d1b28a 74%,#8c7054 100%)}
+.curl-next>img{clip-path:polygon(0 0,calc(100% - 100px) 0,100% 100px,100% 100%,0 100%)}
+.curl-prev>img{clip-path:polygon(100px 0,100% 0,100% 100%,0 100%,0 100px)}
+.curl-next .edge-next .reader-fold,.curl-prev .edge-prev .reader-fold{width:100px;height:100px}
+.turn-static{pointer-events:none}.magazine-page.turn-empty{background:transparent}.turn-empty::after{display:none}
+.magazine-turn::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#0004,transparent 18%,#fff1 70%,#0002)}
+.is-zoomed .magazine-edge{display:none}
+@media(prefers-reduced-motion:reduce){.magazine-page>img,.reader-fold{transition:none}}
+.is-zoomed .magazine-viewport{display:block;touch-action:pan-x pan-y pinch-zoom}.is-zoomed .magazine-book{height:auto;max-height:none;width:180%;max-width:none;min-height:100%}.is-zoomed .magazine-page{height:auto;cursor:zoom-out}.is-zoomed .magazine-page img{height:auto}
+@media(max-width:900px){.magazine-shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 22px}}
+@media(max-width:700px){.magazine-reader{padding:12px 8px;width:98vw;max-width:98vw;height:96dvh;max-height:96dvh}.magazine-toolbar{flex-wrap:wrap;gap:6px}.magazine-toolbar h2{width:100%;font-size:15px}.magazine-toolbar button{font-size:12px;padding:7px 12px}.magazine-navigation{gap:8px}.magazine-navigation output{min-width:90px;font-size:12px}.magazine-reader-hint{font-size:11px}.magazine-card>b{font-size:16px;margin:16px 0 10px}.magazine-action{padding:9px 12px;font-size:13px}.magazine-viewport{padding:4px}}
+@media(prefers-reduced-motion:reduce){.magazine-cover,.magazine-front,.magazine-fold{transition:none}}

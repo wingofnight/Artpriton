@@ -124,7 +124,7 @@ document.getElementById('f').addEventListener('submit',async function(ev){
     });
     var result=await response.json();
     if(!response.ok||(result.success!==true&&result.success!=='true'))throw new Error('Service rejected submission');
-    st.textContent='Сервис принял заявку. Спасибо! Если почта ещё не активирована, владельцу сайта нужно подтвердить адрес в письме от FormSubmit.';
+    st.textContent='Сервис принял заявку';
     f.reset();
   }catch(error){
     st.textContent=error.name==='AbortError'?'Сервис не ответил за 20 секунд. Доставка не подтверждена. Попробуйте позже или напишите нам по контактам справа.':'Не удалось подтвердить отправку. Проверьте подключение или напишите нам по контактам справа. Введённые данные сохранены.';

@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>BLOCK HUNTER — кликер</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:#15161a;color:#e6e6e6;
+    font-family:'Courier New',Consolas,monospace;
+    display:flex;flex-direction:column;height:100dvh;overflow:hidden;
+    user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  #top{display:flex;gap:6px;padding:8px;background:#1f2126;border-bottom:3px solid #0c0d10;flex-wrap:wrap}
+  .stat{
+    background:#2b2e35;border:2px solid #0c0d10;border-bottom-color:#454a54;border-right-color:#454a54;
+    padding:5px 8px;font-size:13px;font-weight:bold;display:flex;align-items:center;gap:6px;
+    flex:1 1 0;justify-content:center;min-width:0;white-space:nowrap;overflow:hidden;
+  }
+  #gold{color:#f2c14e}#gems{color:#a55eea}
+
+  /* ---------- MAIN ---------- */
+  #main{flex:1;display:flex;min-height:0}
+  #stage{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;cursor:crosshair;
+    background:
+      radial-gradient(circle at 50% 40%, #2a2f38 0%, #171a1f 70%),
+      repeating-linear-gradient(0deg,#0000 0 22px,#ffffff05 22px 23px),
+      repeating-linear-gradient(90deg,#0000 0 22px,#ffffff05 22px 23px);
+    transition:background .4s;
+  }
+  #stage.loc-forest{background:radial-gradient(circle at 50% 40%,#1e3018 0%,#0e1a0a 70%),repeating-linear-gradient(0deg,#0000 0 22px,#ffffff05 22px 23px),repeating-linear-gradient(90deg,#0000 0 22px,#ffffff05 22px 23px)}
+  #stage.loc-desert{background:radial-gradient(circle at 50% 40%,#4a3a18 0%,#1e1608 70%),repeating-linear-gradient(0deg,#0000 0 22px,#ffffff05 22px 23px),repeating-linear-gradient(90deg,#0000 0 22px,#ffffff05 22px 23px)}
+  #stage.loc-tundra{background:radial-gradient(circle at 50% 40%,#1e3a4a 0%,#081418 70%),repeating-linear-gradient(0deg,#0000 0 22px,#ffffff08 22px 23px),repeating-linear-gradient(90deg,#0000 0 22px,#ffffff08 22px 23px)}
+  #stage.loc-nether{background:radial-gradient(circle at 50% 40%,#4a1818 0%,#1e0505 70%),repeating-linear-gradient(0deg,#0000 0 22px,#ff660010 22px 23px),repeating-linear-gradient(90deg,#0000 0 22px,#ff660010 22px 23px)}
+  #stage.loc-end{background:radial-gradient(circle at 50% 40%,#2a1e4a 0%,#0e0818 70%),repeating-linear-gradient(0deg,#0000 0 22px,#a55eea10 22px 23px),repeating-linear-gradient(90deg,#0000 0 22px,#a55eea10 22px 23px)}
+  #stage.loc-dragon{background:radial-gradient(circle at 50% 40%,#3a1818 0%,#1a0808 70%),repeating-linear-gradient(0deg,#0000 0 22px,#f2c14e10 22px 23px),repeating-linear-gradient(90deg,#0000 0 22px,#f2c14e10 22px 23px)}
+
+  #locBadge{
+    position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    background:#0c0d10cc;padding:4px 12px;font-size:12px;font-weight:bold;
+    border:2px solid #0c0d10;letter-spacing:1px;color:#e6e6e6;
+  }
+  #mname{font-size:15px;font-weight:bold;letter-spacing:1px;margin-bottom:2px;text-shadow:2px 2px 0 #000}
+  #mlvl{font-size:11px;color:#9aa0ab;margin-bottom:8px}
+  #mwrap{position:relative;display:flex;align-items:center;justify-content:center}
+  #cv{
+    width:clamp(120px,26vmin,220px);height:auto;
+    image-rendering:pixelated;image-rendering:-moz-crisp-edges;
+    filter:drop-shadow(0 8px 0 #0008);
+    transition:transform .06s;
+  }
+  #cv.hit{transform:translateY(4px) scale(.96)}
+  #cv.boss{filter:drop-shadow(0 0 14px #f2c14eaa) drop-shadow(0 8px 0 #0008)}
+
+  #hpwrap{
+    width:min(420px,84vw);height:26px;background:#0c0d10;border:3px solid #0c0d10;
+    margin-top:14px;position:relative;overflow:hidden;
+    box-shadow:inset 0 3px 0 #0006;
+  }
+  #hpfill{
+    height:100%;width:100%;background:linear-gradient(180deg,#e04b4b,#8c1f1f);
+    transition:width .08s linear;
+  }
+  #hpfill.boss{background:linear-gradient(180deg,#f2c14e,#b07a12)}
+  #hptext{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:bold;text-shadow:1px 1px 0 #000;letter-spacing:.5px;
+  }
+  #hint{margin-top:10px;font-size:11px;color:#6b7280}
+
+  #floaters{position:absolute;inset:0;pointer-events:none;overflow:visible}
+  .floater{
+    position:absolute;transform:translate(-50%,-50%);
+    font-weight:bold;font-size:18px;text-shadow:2px 2px 0 #000;
+    color:#fff;animation:fl .75s ease-out forwards;pointer-events:none;white-space:nowrap;
+  }
+  .floater.crit{color:#f2c14e;font-size:26px}
+  @keyframes fl{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+    15%{opacity:1;transform:translate(-50%,-60%) scale(1.1)}
+    100%{opacity:0;transform:translate(-50%,-160%) scale(1)}
+  }
+
+  /* ---------- SHOP ---------- */
+  #shop{
+    width:360px;background:#1c1e23;border-left:3px solid #0c0d10;
+    display:flex;flex-direction:column;min-height:0;
+  }
+  .tabs{display:flex;border-bottom:3px solid #0c0d10}
+  .tabs button{
+    flex:1;background:#24272d;color:#9aa0ab;border:none;padding:10px 2px;
+    font-family:inherit;font-size:11px;font-weight:bold;cursor:pointer;
+    border-right:2px solid #0c0d10;transition:background .12s;white-space:nowrap;
+  }
+  .tabs button:last-child{border-right:none}
+  .tabs button:hover{background:#2e323a;color:#ddd}
+  .tabs button.active{background:#3a3f4a;color:#fff;box-shadow:inset 0 -3px 0 #7ee06a}
+  #list{flex:1;overflow-y:auto;padding:8px;min-height:0}
+  #list::-webkit-scrollbar{width:8px}
+  #list::-webkit-scrollbar-thumb{background:#3a3f4a}
+  #list::-webkit-scrollbar-track{background:#15161a}
+
+  .item{
+    display:flex;align-items:center;gap:10px;
+    background:#2b2e35;border:2px solid #0c0d10;
+    border-bottom-color:#484d58;border-right-color:#484d58;
+    padding:8px;margin-bottom:6px;cursor:pointer;
+    transition:background .1s,transform .05s;
+  }
+  .item:hover{background:#353a44}
+  .item:active{transform:translate(1px,1px)}
+  .item.no{opacity:.42;cursor:not-allowed}
+  .item.no:hover{background:#2b2e35}
+  .item.current{background:#2f4a2b;box-shadow:inset 0 0 0 2px #7ee06a}
+  .item .ico{font-size:22px;width:28px;text-align:center;flex-shrink:0}
+  .item .info{flex:1;min-width:0}
+  .item .nm{font-size:13px;font-weight:bold;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+  .item .nm .cnt{font-size:11px;color:#7ee06a}
+  .item .ds{font-size:10.5px;color:#9aa0ab;margin-top:2px;line-height:1.3}
+  .item .cost{font-size:11.5px;color:#f2c14e;text-align:right;white-space:nowrap;font-weight:bold}
+  .item.ok .cost{color:#7ee06a}
+
+  .section{
+    font-size:10px;letter-spacing:2px;color:#6b7280;text-transform:uppercase;
+    padding:8px 4px 4px;border-bottom:1px solid #2b2e35;margin-bottom:6px;
+  }
+  .bigbtn{
+    width:100%;padding:12px;font-family:inherit;font-size:13px;font-weight:bold;
+    background:#5a2f7a;color:#fff;border:2px solid #0c0d10;
+    border-bottom-color:#8f4fbf;border-right-color:#8f4fbf;cursor:pointer;margin-top:6px;
+  }
+  .bigbtn:hover:not(:disabled){background:#6c3a91}
+  .bigbtn:disabled{opacity:.4;cursor:not-allowed}
+  .bigbtn.confirm{background:#a33;border-bottom-color:#f55;border-right-color:#f55}
+
+  /* ---------- STATS PANEL (bottom) ---------- */
+  #statsPanel{
+    flex-shrink:0;background:#101216;border-top:3px solid #0c0d10;
+    padding:8px 10px;font-size:11px;line-height:1.55;
+    max-height:200px;overflow-y:auto;
+  }
+  #statsPanel::-webkit-scrollbar{width:6px}
+  #statsPanel::-webkit-scrollbar-thumb{background:#3a3f4a}
+  #statsPanel .row{display:flex;justify-content:space-between;gap:8px;padding:1px 0}
+  #statsPanel .row span:first-child{color:#8a909c;white-space:nowrap}
+  #statsPanel .row span:last-child{color:#e6e6e6;font-weight:bold;text-align:right}
+  #statsPanel .v-green{color:#7ee06a !important}
+  #statsPanel .v-gold{color:#f2c14e !important}
+  #statsPanel .v-purple{color:#c48fff !important}
+  #statsPanel .hd{font-size:9px;letter-spacing:2px;color:#5a616c;margin-top:5px;text-transform:uppercase;border-bottom:1px solid #22252c;padding-bottom:2px;margin-bottom:3px}
+  #statsPanel .hd:first-child{margin-top:0}
+
+  /* ---------- MOBILE ---------- */
+  @media (max-width:760px){
+    #main{flex-direction:column}
+    #stage{flex:0 0 38%;padding-top:20px}
+    #shop{width:100%;flex:1;border-left:none;border-top:3px solid #0c0d10}
+    #cv{width:clamp(80px,20vmin,130px)}
+    #hpwrap{width:88vw;height:22px;margin-top:8px}
+    #hint{display:none}
+    .stat{font-size:11px;padding:4px 6px}
+    #statsPanel{max-height:130px;font-size:10px}
+    .tabs button{font-size:10px;padding:8px 1px}
+  }
+</style>
+</head>
+<body>
+
+<div id="top">
+  <div class="stat">💰 <span id="gold">0</span></div>
+  <div class="stat">💎 <span id="gems">0</span></div>
+  <div class="stat">🏆 Ур. <span id="lvl">1</span></div>
+  <div class="stat">💀 <span id="kills">0</span></div>
+</div>
+
+<div id="main">
+  <div id="stage" class="loc-forest">
+    <div id="locBadge">🌲 Тёмный лес</div>
+    <div id="mname">Зомби</div>
+    <div id="mlvl">Уровень 1</div>
+    <div id="mwrap">
+      <canvas id="cv" width="16" height="16"></canvas>
+      <div id="floaters"></div>
+    </div>
+    <div id="hpwrap">
+      <div id="hpfill"></div>
+      <div id="hptext">10 / 10</div>
+    </div>
+    <div id="hint">КЛИК ПО МОНСТРУ = АТАКА &nbsp;•&nbsp; [ПРОБЕЛ]</div>
+  </div>
+
+  <div id="shop">
+    <div class="tabs">
+      <button data-tab="click" class="active">⚔️ Урон</button>
+      <button data-tab="pets">🐺 Звери</button>
+      <button data-tab="map">🗺️ Карта</button>
+      <button data-tab="gems">💎 Кузня</button>
+    </div>
+    <div id="list"></div>
+    <div id="statsPanel"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   BLOCK HUNTER — кликер v2
+   ============================================================ */
+
+/* ---------- СПРАЙТЫ ---------- */
+const HUMANOID = [
+  "............",
+  "...111111...",
+  "..11111111..",
+  "..11311311..",
+  "..11111111..",
+  "..11222211..",
+  "..11111111..",
+  ".1111111111.",
+  ".1111111111.",
+  ".1111111111.",
+  "..11....11..",
+  "..11....11.."
+];
+
+const CREEPER = [
+  "............",
+  "..11111111..",
+  "..11111111..",
+  "..12211221..",
+  "..11111111..",
+  "..12222221..",
+  "..12122121..",
+  "..11111111..",
+  "..11111111..",
+  "..11.11.11..",
+  "..11.11.11..",
+  "..11.11.11.."
+];
+
+const SPIDER = [
+  "............",
+  "..1......1..",
+  "..11....11..",
+  "..1111111...",
+  ".111111111..",
+  "..1121211...",
+  ".11111111111",
+  ".1.1111111.1",
+  ".1..11111..1",
+  "....11111...",
+  "..1.1...1.1.",
+  ".1.........1"
+];
+
+const SLIME = [
+  "............",
+  "............",
+  "....1111....",
+  "...111111...",
+  "..11111111..",
+  "..11211211..",
+  "..11111111..",
+  "..11122111..",
+  ".1111111111.",
+  ".1111111111.",
+  "..11....11..",
+  "............"
+];
+
+const MONSTERS = [
+  { name:"Зомби",         spr:HUMANOID, pal:{1:"#3f7a3a",2:"#274e22",3:"#0b1a0a"} },
+  { name:"Скелет",        spr:HUMANOID, pal:{1:"#d9d9cf",2:"#8d8d82",3:"#141414"} },
+  { name:"Крипер",        spr:CREEPER,  pal:{1:"#4cbf4c",2:"#175217",3:"#141414"} },
+  { name:"Эндермен",      spr:HUMANOID, pal:{1:"#1b1b30",2:"#0b0b16",3:"#c86bff"} },
+  { name:"Визер-скелет",  spr:HUMANOID, pal:{1:"#2e2e2e",2:"#121212",3:"#ff7a2b"} },
+  { name:"Паук",          spr:SPIDER,   pal:{1:"#3a1a1a",2:"#e04b4b",3:"#141414"} },
+  { name:"Слизень",       spr:SLIME,    pal:{1:"#4caf4c",2:"#1d4d1d",3:"#141414"} },
+  { name:"Свинозверь",    spr:HUMANOID, pal:{1:"#d99a9a",2:"#7d4a4a",3:"#2a0808"} }
+];
+
+/* ---------- КОНФИГ ---------- */
+const HP_BASE     = 10;
+const HP_GROWTH   = 1.16;
+const GOLD_BASE   = 2.5;
+const GOLD_GROWTH = 1.15;
+const BOSS_EVERY  = 10;
+const BOSS_HP_MUL = 6;
+const BOSS_GOLD_MUL = 6;
+
+const SWORD_BASE_COST = 10;
+const SWORD_BASE_DMG  = 4;
+const SWORD_GROWTH    = 1.15;
+const PRESTIGE_MIN_LEVEL = 25;
+
+/* ---------- ЛОКАЦИИ ---------- */
+const LOCATIONS = [
+  { id:"forest", ico:"🌲", name:"Тёмный лес",
+    unlock:1,    goldMul:1,      hpMul:1,      monsters:[0,1,2,6] },
+  { id:"desert", ico:"🏜️", name:"Пустыня душ",
+    unlock:25,   goldMul:12,     hpMul:6,      monsters:[1,5,7,0] },
+  { id:"tundra", ico:"❄️", name:"Ледяные пики",
+    unlock:75,   goldMul:150,    hpMul:50,     monsters:[0,1,3,5] },
+  { id:"nether", ico:"🔥", name:"Нижний мир",
+    unlock:200,  goldMul:1600,   hpMul:400,    monsters:[2,4,7,5] },
+  { id:"end",    ico:"🌌", name:"Край",
+    unlock:500,  goldMul:15000,  hpMul:3000,   monsters:[3,4,6,0] },
+  { id:"dragon", ico:"🐲", name:"Логово дракона",
+    unlock:1500, goldMul:150000, hpMul:25000,  monsters:[7,4,5,3] }
+];
+
+const COMPANIONS = [
+  { id:"wolf",   ico:"🐺", name:"Волк",           cost:50,      dps:6,       growth:1.15 },
+  { id:"golem",  ico:"🧊", name:"Снежный голем",   cost:500,     dps:75,      growth:1.15 },
+  { id:"blaze",  ico:"🔥", name:"Блейз",           cost:5000,    dps:900,     growth:1.15 },
+  { id:"iron",   ico:"🗿", name:"Железный голем",  cost:50000,   dps:11000,   growth:1.15 },
+  { id:"dragon", ico:"🐉", name:"Дракончик",       cost:500000,  dps:130000,  growth:1.15 },
+  { id:"wither", ico:"💀", name:"Визер",           cost:5000000, dps:1600000, growth:1.15 }
+];
+
+const GEM_UPS = [
+  { id:"sharp",   ico:"⚔️", name:"Острота",     desc:"+25% урона клика",        cost:1, growth:1.7, max:99, pct:25, base:1.0 },
+  { id:"pack",    ico:"🐾", name:"Стая",        desc:"+25% урона спутников",    cost:1, growth:1.7, max:99, pct:25, base:1.0 },
+  { id:"luck",    ico:"🍀", name:"Удача",       desc:"+25% золота",             cost:1, growth:1.7, max:99, pct:25, base:1.0 },
+  { id:"crit",    ico:"🎯", name:"Меткость",    desc:"+3% шанс крита",          cost:2, growth:1.8, max:20, pct:3,  base:5   },
+  { id:"critdmg", ico:"💥", name:"Сокрушение",  desc:"+0.5x урон крита",        cost:3, growth:1.9, max:99, pct:50, base:3.0 },
+  { id:"auto",    ico:"🤖", name:"Авто-удар",   desc:"+1 авто-атака в секунду", cost:4, growth:2.2, max:99, pct:100,base:0   }
+];
+
+/* ---------- СОСТОЯНИЕ ---------- */
+const state = {
+  gold: 0,
+  gems: 0,
+  level: 1,
+  kills: 0,
+  prestiges: 0,
+  maxLevel: 1,
+  sword: 0,
+  companions: {},
+  gemUps: {},
+  location: "forest",
+  hp: 0,
+  maxHp: 0,
+  isBoss: false,
+  reward: 0,
+  autoAcc: 0
+};
+
+/* ---------- DOM ---------- */
+const cv       = document.getElementById("cv");
+const ctx      = cv.getContext("2d");
+const elGold   = document.getElementById("gold");
+const elGems   = document.getElementById("gems");
+const elLvl    = document.getElementById("lvl");
+const elKills  = document.getElementById("kills");
+const elName   = document.getElementById("mname");
+const elMlvl   = document.getElementById("mlvl");
+const elHpFill = document.getElementById("hpfill");
+const elHpText = document.getElementById("hptext");
+const elStage  = document.getElementById("stage");
+const elFloats = document.getElementById("floaters");
+const elList   = document.getElementById("list");
+const elStats  = document.getElementById("statsPanel");
+const elLocBadge = document.getElementById("locBadge");
+
+/* ---------- ФОРМАТ ЧИСЕЛ ---------- */
+const UNITS = ["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td"];
+function fmt(n){
+  if (!isFinite(n)) return "∞";
+  if (n < 0) return "-" + fmt(-n);
+  if (n < 1000) {
+    if (n < 10) return (Math.round(n * 10) / 10).toString();
+    return Math.floor(n).toString();
+  }
+  let i = 0;
+  while (n >= 1000 && i < UNITS.length - 1) { n /= 1000; i++; }
+  return n.toFixed(2) + UNITS[i];
+}
+
+function geoSum(base, g, n){ return n <= 0 ? 0 : base * (Math.pow(g, n) - 1) / (g - 1); }
+function nextCost(base, g, n){ return base * Math.pow(g, n); }
+function curLocation(){ return LOCATIONS.find(l => l.id === state.location) || LOCATIONS[0]; }
+
+/* ---------- СТАТЫ ---------- */
+function stats(){
+  const su = state.gemUps;
+
+  const baseClick = 1;
+  const swordBonus = geoSum(SWORD_BASE_DMG, SWORD_GROWTH, state.sword);
+  const sharpMul = Math.pow(1.25, su.sharp || 0);
+  const click = (baseClick + swordBonus) * sharpMul;
+
+  const packMul = Math.pow(1.25, su.pack || 0);
+  let baseDps = 0;
+  for (const c of COMPANIONS){
+    const n = state.companions[c.id] || 0;
+    if (n > 0) baseDps += geoSum(c.dps, c.growth, n);
+  }
+  const dps = baseDps * packMul;
+
+  const goldMult = Math.pow(1.25, su.luck || 0);
+  const critChance = Math.min(0.75, 0.05 + 0.03 * (su.crit || 0));
+  const critMult = 3 + 0.5 * (su.critdmg || 0);
+  const auto = su.auto || 0;
+
+  return {
+    baseClick, swordBonus, sharpMul, click,
+    baseDps, packMul, dps,
+    goldMult, critChance, critMult, auto
+  };
+}
+
+/* ---------- СПАВН ---------- */
+function spawn(){
+  const loc = curLocation();
+  const L = state.level;
+
+  state.isBoss = (L % BOSS_EVERY === 0);
+
+  const baseHp = HP_BASE * Math.pow(HP_GROWTH, L - 1);
+  state.maxHp = baseHp * loc.hpMul * (state.isBoss ? BOSS_HP_MUL : 1);
+  state.hp = state.maxHp;
+
+  const baseGold = GOLD_BASE * Math.pow(GOLD_GROWTH, L - 1);
+  state.reward = baseGold * loc.goldMul * (state.isBoss ? BOSS_GOLD_MUL : 1);
+  state.autoAcc = 0;
+
+  const idx = loc.monsters[Math.floor((L - 1) / 4) % loc.monsters.length];
+  const m = MONSTERS[idx];
+
+  elName.textContent = (state.isBoss ? "👑 " : "") + m.name;
+  elMlvl.textContent = (state.isBoss ? "БОСС • " : "") + "Уровень " + L;
+  elLocBadge.textContent = loc.ico + " " + loc.name;
+
+  // фон под локацию
+  elStage.className = "loc-" + loc.id;
+
+  cv.classList.toggle("boss", state.isBoss);
+  drawMonster(m);
+  updateHpBar();
+}
+
+/* ---------- РИСОВАНИЕ ---------- */
+function drawMonster(m){
+  ctx.clearRect(0, 0, 16, 16);
+  const ox = 2, oy = state.isBoss ? 4 : 2;
+
+  for (let y = 0; y < 12; y++){
+    for (let x = 0; x < 12; x++){
+      const ch = m.spr[y][x];
+      if (ch === ".") continue;
+      ctx.fillStyle = m.pal[ch] || "#fff";
+      ctx.fillRect(ox + x, oy + y, 1, 1);
+    }
+  }
+
+  if (state.isBoss){
+    ctx.fillStyle = "#f2c14e";
+    ctx.fillRect(ox + 2, oy - 2, 8, 2);
+    ctx.fillRect(ox + 2, oy - 4, 2, 2);
+    ctx.fillRect(ox + 5, oy - 4, 2, 2);
+    ctx.fillRect(ox + 8, oy - 4, 2, 2);
+    ctx.fillStyle = "#ff4d4d";
+    ctx.fillRect(ox + 5, oy - 2, 2, 2);
+  }
+}
+
+function updateHpBar(){
+  const p = Math.max(0, state.hp / state.maxHp);
+  elHpFill.style.width = (p * 100) + "%";
+  elHpFill.classList.toggle("boss", state.isBoss);
+  elHpText.textContent = fmt(Math.max(0, state.hp)) + " / " + fmt(state.maxHp);
+}
+
+/* ---------- УРОН ---------- */
+function hit(dmg, showFloat, isCrit, px, py){
+  if (state.hp <= 0) return;
+  state.hp -= dmg;
+
+  if (showFloat){
+    spawnFloat(fmt(dmg), isCrit, px, py);
+    cv.classList.add("hit");
+    setTimeout(() => cv.classList.remove("hit"), 60);
+  }
+
+  if (state.hp <= 0){
+    state.hp = 0;
+    updateHpBar();
+    killMonster();
+    return;
+  }
+  updateHpBar();
+}
+
+function killMonster(){
+  const s = stats();
+  state.gold += state.reward * s.goldMult;
+  state.kills++;
+
+  if (state.isBoss){
+    state.gems += 1 + Math.floor(state.level / 30);
+  }
+
+  state.level++;
+  if (state.level > state.maxLevel) state.maxLevel = state.level;
+
+  spawn();
+  refreshTop();
+}
+
+function spawnFloat(text, crit, px, py){
+  const d = document.createElement("div");
+  d.className = "floater" + (crit ? " crit" : "");
+  d.textContent = text + (crit ? "!" : "");
+  d.style.left = px + "px";
+  d.style.top  = py + "px";
+  elFloats.appendChild(d);
+  setTimeout(() => d.remove(), 780);
+}
+
+/* ---------- КЛИК ---------- */
+function doClick(clientX, clientY){
+  if (paused) return;
+  const s = stats();
+  let dmg = s.click;
+  const isCrit = Math.random() < s.critChance;
+  if (isCrit) dmg *= s.critMult;
+
+  const r = elStage.getBoundingClientRect();
+  let px, py;
+  if (clientX != null){
+    px = clientX - r.left;
+    py = clientY - r.top;
+  } else {
+    px = r.width / 2 + (Math.random() * 60 - 30);
+    py = r.height / 2 + 20;
+  }
+
+  hit(dmg, true, isCrit, px, py);
+}
+
+elStage.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  doClick(e.clientX, e.clientY);
+});
+
+window.addEventListener("keydown", e => {
+  if (e.code === "Space"){
+    e.preventDefault();
+    doClick(null, null);
+  }
+});
+
+/* ============================================================
+   МАГАЗИН
+   ============================================================ */
+let currentTab = "click";
+let shopRows = [];
+let clickInfoEl = null;
+let lastMapLevel = -1;
+let prestigeConfirm = false;
+
+function buildShop(){
+  elList.innerHTML = "";
+  shopRows = [];
+  clickInfoEl = null;
+
+  if (currentTab === "click") buildClickTab();
+  else if (currentTab === "pets") buildPetsTab();
+  else if (currentTab === "map") buildMapTab();
+  else buildGemsTab();
+}
+
+/* ----- УРОН ----- */
+function buildClickTab(){
+  const head = document.createElement("div");
+  head.className = "section";
+  head.textContent = "Оружие";
+  elList.appendChild(head);
+
+  addRow({
+    ico:"🗡️",
+    name:"Меч",
+    getDesc: () => "+" + fmt(SWORD_BASE_DMG * Math.pow(SWORD_GROWTH, state.sword)) + " урона за клик",
+    getCount: () => state.sword,
+    getCost:  () => nextCost(SWORD_BASE_COST, SWORD_GROWTH, state.sword),
+    buy: () => { state.sword++; }
+  });
+
+  clickInfoEl = document.createElement("div");
+  clickInfoEl.className = "section";
+  clickInfoEl.style.borderBottom = "none";
+  clickInfoEl.style.lineHeight = "1.9";
+  clickInfoEl.style.marginTop = "10px";
+  clickInfoEl.style.textTransform = "none";
+  clickInfoEl.style.letterSpacing = "0";
+  clickInfoEl.style.fontSize = "11px";
+  clickInfoEl.style.color = "#e6e6e6";
+  elList.appendChild(clickInfoEl);
+}
+
+/* ----- СПУТНИКИ ----- */
+function buildPetsTab(){
+  const head = document.createElement("div");
+  head.className = "section";
+  head.textContent = "Спутники (урон в секунду)";
+  elList.appendChild(head);
+
+  for (const c of COMPANIONS){
+    addRow({
+      ico: c.ico,
+      name: c.name,
+      getDesc: () => {
+        const n = state.companions[c.id] || 0;
+        const dps = c.dps * Math.pow(c.growth, n);
+        return "+" + fmt(dps) + " DPS каждый • Всего: +" + fmt(geoSum(c.dps, c.growth, n)) ;
+      },
+      getCount: () => state.companions[c.id] || 0,
+      getCost:  () => nextCost(c.cost, c.growth, state.companions[c.id] || 0),
+      buy: () => {
+        state.companions[c.id] = (state.companions[c.id] || 0) + 1;
+      }
+    });
+  }
+}
+
+/* ----- ЛОКАЦИИ ----- */
+function buildMapTab(){
+  const head = document.createElement("div");
+  head.className = "section";
+  head.textContent = "Выбор локации";
+  elList.appendChild(head);
+
+  const note = document.createElement("div");
+  note.style.cssText = "font-size:10.5px;color:#9aa0ab;line-height:1.5;padding:2px 4px 10px";
+  note.textContent = "Чем дальше локация — тем больше HP у монстров, но и золота в разы больше.";
+  elList.appendChild(note);
+
+  for (const loc of LOCATIONS){
+    const locked = state.level < loc.unlock;
+    const isCurrent = state.location === loc.id;
+
+    const el = document.createElement("div");
+    el.className = "item";
+    if (locked) el.classList.add("no");
+    if (isCurrent) el.classList.add("current");
+
+    let right = "";
+    if (locked) right = "🔒 Ур. " + loc.unlock;
+    else if (isCurrent) right = "✔ здесь";
+    else right = "→";
+
+    el.innerHTML =
+      '<div class="ico">' + loc.ico + '</div>' +
+      '<div class="info">' +
+        '<div class="nm">' + loc.name +
+          (isCurrent ? ' <span class="cnt">ВЫ ЗДЕСЬ</span>' : '') +
+        '</div>' +
+        '<div class="ds">💰 ×' + fmt(loc.goldMul) + ' • 💀 HP ×' + fmt(loc.hpMul) + '</div>' +
+      '</div>' +
+      '<div class="cost">' + right + '</div>';
+
+    if (!locked && !isCurrent){
+      el.addEventListener("click", () => {
+        state.location = loc.id;
+        spawn();
+        buildShop();
+        refreshTop();
+      });
+    }
+
+    elList.appendChild(el);
+  }
+}
+
+/* ----- КУЗНЯ ----- */
+function buildGemsTab(){
+  const head = document.createElement("div");
+  head.className = "section";
+  head.textContent = "Вечные улучшения (за 💎)";
+  elList.appendChild(head);
+
+  for (const g of GEM_UPS){
+    addRow({
+      ico: g.ico,
+      name: g.name,
+      getDesc: () => {
+        const n = state.gemUps[g.id] || 0;
+        if (n === 0) return g.desc;
+        if (g.id === "sharp" || g.id === "pack" || g.id === "luck"){
+          return g.desc + " • сейчас ×" + Math.pow(1.25, n).toFixed(2);
+        }
+        if (g.id === "crit"){
+          const total = 5 + 3 * n;
+          return g.desc + " • сейчас " + total + "%";
+        }
+        if (g.id === "critdmg"){
+          return g.desc + " • сейчас ×" + (3 + 0.5 * n).toFixed(1);
+        }
+        if (g.id === "auto"){
+          return g.desc + " • сейчас " + n + "/сек";
+        }
+        return g.desc;
+      },
+      getCount: () => state.gemUps[g.id] || 0,
+      getCost:  () => nextCost(g.cost, g.growth, state.gemUps[g.id] || 0),
+      gem: true,
+      maxed: () => (state.gemUps[g.id] || 0) >= g.max,
+      buy: () => {
+        state.gemUps[g.id] = (state.gemUps[g.id] || 0) + 1;
+      }
+    });
+  }
+
+  const head2 = document.createElement("div");
+  head2.className = "section";
+  head2.style.marginTop = "14px";
+  head2.textContent = "Возрождение";
+  elList.appendChild(head2);
+
+  const btn = document.createElement("button");
+  btn.className = "bigbtn";
+  btn.id = "prestigeBtn";
+  elList.appendChild(btn);
+
+  const note = document.createElement("div");
+  note.style.cssText = "font-size:10.5px;color:#9aa0ab;line-height:1.5;padding:6px 4px";
+  note.textContent = "Сбрасывает уровень, золото, меч и спутников. Изумруды и кузница — навсегда.";
+  elList.appendChild(note);
+
+  const info = document.createElement("div");
+  info.style.cssText = "font-size:11px;color:#9aa0ab;line-height:1.7;padding:6px 4px";
+  info.id = "prestigeInfo";
+  elList.appendChild(info);
+}
+
+/* ---------- РЯДЫ ---------- */
+function addRow(cfg){
+  const el = document.createElement("div");
+  el.className = "item";
+
+  const ico = document.createElement("div");
+  ico.className = "ico";
+  ico.textContent = cfg.ico;
+
+  const info = document.createElement("div");
+  info.className = "info";
+
+  const nm = document.createElement("div");
+  nm.className = "nm";
+  const nmText = document.createElement("span");
+  nmText.textContent = cfg.name;
+  const cnt = document.createElement("span");
+  cnt.className = "cnt";
+  nm.appendChild(nmText);
+  nm.appendChild(cnt);
+
+  const ds = document.createElement("div");
+  ds.className = "ds";
+
+  info.appendChild(nm);
+  info.appendChild(ds);
+
+  const cost = document.createElement("div");
+  cost.className = "cost";
+
+  el.appendChild(ico);
+  el.appendChild(info);
+  el.appendChild(cost);
+  elList.appendChild(el);
+
+  const row = { el, cnt, ds, cost, cfg };
+  shopRows.push(row);
+
+  el.addEventListener("click", () => {
+    if (el.classList.contains("no")) return;
+    if (cfg.maxed && cfg.maxed()) return;
+
+    const c = cfg.getCost();
+    if (cfg.gem){
+      if (state.gems < c) return;
+      state.gems -= c;
+    } else {
+      if (state.gold < c) return;
+      state.gold -= c;
+    }
+
+    cfg.buy();
+    refreshTop();
+    refreshShop();
+  });
+}
+
+/* ---------- ОБНОВЛЕНИЕ МАГАЗИНА ---------- */
+function refreshShop(){
+  // для карты — перестраиваем если сменился уровень (открылись новые локации)
+  if (currentTab === "map"){
+    if (lastMapLevel !== state.level){
+      lastMapLevel = state.level;
+      buildShop();
+    }
+  }
+
+  const s = stats();
+  for (const r of shopRows){
+    const n = r.cfg.getCount();
+    r.cnt.textContent = n > 0 ? "x" + n : "";
+    r.ds.textContent = r.cfg.getDesc();
+
+    const maxed = r.cfg.maxed && r.cfg.maxed();
+    const c = r.cfg.getCost();
+    const have = r.cfg.gem ? state.gems : state.gold;
+    const can = !maxed && have >= c;
+
+    r.cost.textContent = maxed ? "MAX" : (r.cfg.gem ? "💎 " : "💰 ") + fmt(c);
+    r.el.classList.toggle("no", !can);
+    r.el.classList.toggle("ok", can);
+  }
+
+  // инфа на вкладке "Урон"
+  if (currentTab === "click" && clickInfoEl){
+    clickInfoEl.innerHTML =
+      "Урон клика: <b style='color:#7ee06a'>" + fmt(s.click) + "</b><br>" +
+      "Крит: <b style='color:#f2c14e'>" + Math.round(s.critChance * 100) + "%</b> ×<b style='color:#f2c14e'>" + s.critMult.toFixed(1) + "</b><br>" +
+      "DPS спутников: <b style='color:#7ee06a'>" + fmt(s.dps) + "</b>" +
+      (s.auto ? "<br>Авто-клик: <b style='color:#7ee06a'>" + s.auto + "/сек</b>" : "");
+  }
+
+  // престиж-кнопка
+  if (currentTab === "gems"){
+    const btn = document.getElementById("prestigeBtn");
+    const info = document.getElementById("prestigeInfo");
+    if (btn){
+      const gain = prestigeGain();
+      const can = gain > 0;
+
+      if (prestigeConfirm && can){
+        btn.disabled = false;
+        btn.classList.add("confirm");
+        btn.textContent = "⚠️ Нажми ещё раз: +" + gain + " 💎";
+      } else {
+        btn.classList.remove("confirm");
+        btn.disabled = !can;
+        if (can) btn.textContent = "✨ Возродиться (+" + gain + " 💎)";
+        else btn.textContent = "✨ Нужен " + PRESTIGE_MIN_LEVEL + " уровень (сейчас " + state.level + ")";
+      }
+    }
+    if (info){
+      info.innerHTML =
+        "Макс. уровень: <b>" + state.maxLevel + "</b><br>" +
+        "Возрождений: <b>" + state.prestiges + "</b><br>" +
+        "Всего убито: <b>" + state.kills + "</b><br>" +
+        "Формула: √(ур. / 12)<sup>1.4</sup> — нужен ур. " + PRESTIGE_MIN_LEVEL + "+";
+    }
+  }
+}
+
+/* ---------- ПАНЕЛЬ СТАТОВ (всегда внизу) ---------- */
+function updateStatsPanel(){
+  const s = stats();
+  const loc = curLocation();
+  const killGold = state.reward * s.goldMult;
+  const avgClick = s.click * (1 + s.critChance * (s.critMult - 1));
+  const totalDps = s.dps + avgClick * s.auto;
+
+  // проценты
+  const swordPct = s.baseClick > 0 ? ((s.swordBonus / s.baseClick) * 100) : 0;
+  const sharpPct = (s.sharpMul - 1) * 100;
+  const packPct  = (s.packMul - 1) * 100;
+  const luckPct  = (s.goldMult - 1) * 100;
+
+  elStats.innerHTML =
+    '<div class="hd">⚔️ Атака</div>' +
+    '<div class="row"><span>Клик (сред.):</span><span class="v-green">' + fmt(avgClick) + '</span></div>' +
+    '<div class="row"><span>Базовый урон:</span><span>' + fmt(s.baseClick) + '</span></div>' +
+    '<div class="row"><span>Меч:</span><span>+' + fmt(s.swordBonus) + ' (+' + swordPct.toFixed(0) + '%)</span></div>' +
+    '<div class="row"><span>Острота:</span><span class="v-purple">×' + s.sharpMul.toFixed(2) + ' (+' + sharpPct.toFixed(0) + '%)</span></div>' +
+    '<div class="row"><span>Крит-шанс:</span><span class="v-gold">' + (s.critChance * 100).toFixed(1) + '%</span></div>' +
+    '<div class="row"><span>Крит-множитель:</span><span class="v-gold">×' + s.critMult.toFixed(2) + '</span></div>' +
+
+    '<div class="hd">🐺 Спутники</div>' +
+    '<div class="row"><span>DPS спутников:</span><span class="v-green">' + fmt(s.dps) + '</span></div>' +
+    '<div class="row"><span>Стая:</span><span class="v-purple">×' + s.packMul.toFixed(2) + ' (+' + packPct.toFixed(0) + '%)</span></div>' +
+    (s.auto ? '<div class="row"><span>Авто-удары:</span><span>' + s.auto + '/сек</span></div>' : '') +
+
+    '<div class="hd">💰 Экономика</div>' +
+    '<div class="row"><span>Множитель золота:</span><span class="v-purple">×' + s.goldMult.toFixed(2) + ' (+' + luckPct.toFixed(0) + '%)</span></div>' +
+    '<div class="row"><span>Золото за убийство:</span><span class="v-gold">' + fmt(killGold) + '</span></div>' +
+    '<div class="row"><span>Золото:</span><span class="v-gold">' + fmt(state.gold) + '</span></div>' +
+
+    '<div class="hd">🗺️ Локация</div>' +
+    '<div class="row"><span>' + loc.ico + ' ' + loc.name + ':</span><span>💰 ×' + fmt(loc.goldMul) + ' • 💀 ×' + fmt(loc.hpMul) + '</span></div>' +
+    '<div class="row"><span>HP монстра:</span><span>' + fmt(state.maxHp) + '</span></div>' +
+    '<div class="row"><span>Итоговый DPS:</span><span class="v-green">' + fmt(totalDps) + '</span></div>';
+}
+
+/* ---------- ВКЛАДКИ ---------- */
+document.querySelectorAll(".tabs button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    currentTab = b.dataset.tab;
+    lastMapLevel = -1;
+    prestigeConfirm = false;
+    buildShop();
+    refreshShop();
+  });
+});
+
+/* ---------- ПРЕСТИЖ ---------- */
+function prestigeGain(){
+  if (state.level < PRESTIGE_MIN_LEVEL) return 0;
+  return Math.floor(Math.pow(state.level / 12, 1.4));
+}
+
+function doPrestige(){
+  const gain = prestigeGain();
+  if (gain <= 0) return;
+
+  if (!prestigeConfirm){
+    prestigeConfirm = true;
+    refreshShop();
+    setTimeout(() => {
+      prestigeConfirm = false;
+      if (currentTab === "gems") refreshShop();
+    }, 3000);
+    return;
+  }
+
+  prestigeConfirm = false;
+  state.gems += gain;
+  state.prestiges++;
+  state.gold = 0;
+  state.level = 1;
+  state.sword = 0;
+  state.companions = {};
+  state.kills = 0;
+  state.maxLevel = 1;
+  state.autoAcc = 0;
+
+  spawn();
+  refreshTop();
+  buildShop();
+  refreshShop();
+  updateStatsPanel();
+  save();
+}
+
+/* Делегирование клика для кнопки престижа — работает всегда */
+elList.addEventListener("click", (e) => {
+  const btn = e.target.closest("#prestigeBtn");
+  if (btn && !btn.disabled){
+    doPrestige();
+  }
+});
+
+/* ---------- ТОП ---------- */
+function refreshTop(){
+  elGold.textContent = fmt(state.gold);
+  elGems.textContent = fmt(state.gems);
+  elLvl.textContent = state.level;
+  elKills.textContent = fmt(state.kills);
+}
+
+/* ============================================================
+   ЦИКЛ
+   ============================================================ */
+let lastTime = performance.now();
+let paused = false;
+window.addEventListener('message', event => {
+  if (event.source !== window.parent || event.origin !== window.location.origin) return;
+  if (event.data?.type === 'artpritone:game:pause') {
+    paused = true;
+    save();
+  } else if (event.data?.type === 'artpritone:game:resume') {
+    paused = false;
+    lastTime = performance.now();
+  }
+});
+
+function loop(now){
+  const dt = Math.min((now - lastTime) / 1000, 0.25);
+  lastTime = now;
+
+  if (!paused && state.hp > 0){
+    const s = stats();
+    let dmg = 0;
+
+    if (s.dps > 0) dmg += s.dps * dt;
+
+    if (s.auto > 0){
+      state.autoAcc += s.auto * dt;
+      while (state.autoAcc >= 1){
+        state.autoAcc -= 1;
+        let d = s.click;
+        if (Math.random() < s.critChance) d *= s.critMult;
+        dmg += d;
+      }
+    }
+
+    if (dmg > 0) hit(dmg, false, false);
+  }
+
+  refreshTop();
+  updateStatsPanel();
+  requestAnimationFrame(loop);
+}
+
+/* магазин обновляем реже */
+setInterval(refreshShop, 250);
+
+/* ============================================================
+   СОХРАНЕНИЕ
+   ============================================================ */
+function save(){
+  try {
+    localStorage.setItem("blockhunter_save_v2", JSON.stringify({
+      gold: state.gold,
+      gems: state.gems,
+      level: state.level,
+      kills: state.kills,
+      prestiges: state.prestiges,
+      maxLevel: state.maxLevel,
+      sword: state.sword,
+      companions: state.companions,
+      gemUps: state.gemUps,
+      location: state.location
+    }));
+  } catch(e){}
+}
+
+function load(){
+  try {
+    const raw = localStorage.getItem("blockhunter_save_v2");
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (!d) return false;
+    state.gold       = d.gold || 0;
+    state.gems       = d.gems || 0;
+    state.level      = d.level || 1;
+    state.kills      = d.kills || 0;
+    state.prestiges  = d.prestiges || 0;
+    state.maxLevel   = d.maxLevel || state.level;
+    state.sword      = d.sword || 0;
+    state.companions = d.companions || {};
+    state.gemUps     = d.gemUps || {};
+    state.location   = d.location || "forest";
+    if (!LOCATIONS.find(l => l.id === state.location)) state.location = "forest";
+    return true;
+  } catch(e){ return false; }
+}
+
+setInterval(save, 5000);
+window.addEventListener("beforeunload", save);
+window.addEventListener("pagehide", save);
+
+/* ============================================================
+   СТАРТ
+   ============================================================ */
+load();
+spawn();
+buildShop();
+refreshShop();
+refreshTop();
+updateStatsPanel();
+requestAnimationFrame(loop);
+
+console.log("%cBLOCK HUNTER v2", "font-size:20px;color:#7ee06a;font-weight:bold");
+console.log("Новое: карта локаций, подробная статистика внизу, рабочий престиж!");
+</script>
+</body>
+</html>

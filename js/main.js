@@ -119,7 +119,7 @@ document.getElementById('f').addEventListener('submit',async function(ev){
   f.dataset.sending='true';button.disabled=true;f.setAttribute('aria-busy','true');
   st.textContent='Отправляем заявку…';
   try{
-    var response=await fetch('https://formsubmit.co/ajax/levkoshkins@yandex.com',{
+    var response=await fetch('https://formsubmit.co/ajax/artpriton.studio@gmail.com',{
       method:'POST',headers:{Accept:'application/json'},body:new FormData(f),signal:controller.signal
     });
     var result=await response.json();

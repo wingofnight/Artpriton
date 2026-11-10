@@ -3,7 +3,8 @@ var MUSIC_TRACKS = [
   {title:'Пси воздействие кота',artist:'AiVA',src:'assets/Music/Пси воздействие кота.mp3',cover:'assets/Music/PsyDoCat.png'},
   {title:'Пусть весь мир — аномалия',artist:'AiVA',src:'assets/Music/Пусть весь мир - аномалия.mp3',cover:'assets/Music/AnomalyWorld.png'},
   {title:'Счастлив люд, мурчат коты',artist:'AiVA',src:'assets/Music/Счастлив люд, мурчат коты.mp3',cover:'assets/Music/HappyPeople.png'},
-  {title:'ZombieRelax',artist:'AiVA',src:'assets/Music/ZombieRelax.mp3',cover:'assets/Music/ZombieRelax.png'}
+  {title:'ZombieRelax',artist:'AiVA',src:'assets/Music/ZombieRelax.mp3',cover:'assets/Music/ZombieRelax.png'},
+  {title:'ХвостПистолетом',artist:'AiVA',src:'assets/Music/ХвостПистолетом.mp3',cover:'assets/Music/ХвостПистолетом.png'}
 ];
 var VIDEO_TAPES = [
   {title:'Знакомство со студией',src:'assets/Video/Артпритон.mp4',cover:'assets/Video/Artpriton.png'},

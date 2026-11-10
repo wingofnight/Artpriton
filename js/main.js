@@ -124,12 +124,29 @@ document.getElementById('f').addEventListener('submit',async function(ev){
     var response=await fetch(endpoint.href,{
       method:'POST',headers:{Accept:'application/json'},body:new FormData(f),signal:controller.signal
     });
-    var result=await response.json();
-    if(!response.ok||(result.success!==true&&result.success!=='true'))throw new Error('Service rejected submission');
+    var result=await response.json().catch(function(){return null});
+    if(!response.ok||!result||(result.success!==true&&result.success!=='true')){
+      var serviceError=new Error('FormSubmit did not confirm the request');
+      serviceError.status=response.ok?null:response.status;
+      serviceError.unconfirmed=!!result&&/activat|confirm/i.test(String(result.message||''));
+      serviceError.rejected=true;throw serviceError;
+    }
     st.textContent='Сервис принял заявку';
+    var alternate=document.getElementById('form-alternate');if(alternate)alternate.remove();
     f.reset();
   }catch(error){
-    st.textContent=error.name==='AbortError'?'Сервис не ответил за 20 секунд. Доставка не подтверждена. Попробуйте позже или напишите нам по контактам справа.':'Не удалось подтвердить отправку. Проверьте подключение или напишите нам по контактам справа. Введённые данные сохранены.';
+    var detail=error.name==='AbortError'?'Сервис не ответил вовремя.':error.unconfirmed?'FormSubmit просит подтвердить адрес получателя.':error.status?'Сервис не подтвердил отправку (код '+error.status+').':error.rejected?'Сервис не подтвердил отправку.':'Не удалось связаться с сервисом.';
+    st.textContent=detail+' Доставка не подтверждена, данные сохранены. Можно отправить через страницу FormSubmit; если заявка уже дошла, повторная отправка создаст копию.';
+    if(!document.getElementById('form-alternate')){
+      var alternate=document.createElement('button');alternate.type='button';alternate.id='form-alternate';alternate.className='btn';alternate.textContent='Отправить через FormSubmit ↗';
+      alternate.addEventListener('click',function(){
+        if(!f.reportValidity())return;
+        if(!name.value.trim()||!contact.value.trim()){st.textContent='Заполните имя и контакт, чтобы мы могли ответить.';(!name.value.trim()?name:contact).focus();return}
+        st.textContent='Открывается страница FormSubmit. При необходимости подтвердите отправку на ней.';
+        HTMLFormElement.prototype.submit.call(f);
+      });
+      st.insertAdjacentElement('afterend',alternate);
+    }
   }finally{
     clearTimeout(timeout);f.dataset.sending='false';button.disabled=false;f.removeAttribute('aria-busy');
   }

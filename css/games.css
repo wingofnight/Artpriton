@@ -10,8 +10,8 @@
 .cartridge-ridges{position:absolute;inset:28px 8px 46px;pointer-events:none;background:repeating-linear-gradient(to bottom,#655d7180 0 3px,#d0cadc80 3px 7px,transparent 7px 13px);border-radius:5px}
 .cartridge-label{position:relative;display:block;border:3px solid #62596d;border-radius:7px;overflow:hidden;background:#100d19;box-shadow:0 2px 0 #e4dce9;aspect-ratio:2/1}
 .cartridge-label img{width:100%;height:100%;object-fit:cover;display:block}
-.game-cartridge:is([data-game="game-01"],[data-game="game-02"]) .cartridge-label img{object-fit:contain}
-.game-cartridge:is([data-game="game-01"],[data-game="game-02"]) .cartridge-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.game-cartridge:is([data-game="game-01"],[data-game="game-02"],[data-game="game-03"]) .cartridge-label img{object-fit:contain}
+.game-cartridge:is([data-game="game-01"],[data-game="game-02"],[data-game="game-03"]) .cartridge-title{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .cartridge-title{position:absolute;inset:auto 0 0;padding:24px 8px 10px;background:linear-gradient(transparent,#0b0719);color:#fff;text-shadow:0 2px 5px #000;font:400 clamp(15px,2vw,22px)/1.2 var(--head)}
 .cartridge-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:18px;color:#3f3749;font:500 13px var(--body)}
 .cartridge-bottom b{border-radius:5px;padding:4px 10px;background:#261b36;color:var(--cart-accent);font-weight:500}
